@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>School Portfolio Dynamic</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { 
+            --lux-orange: #FF8C00; 
+            --lux-blue: #002366; 
+            --white: #ffffff; 
+        }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif;
+            touch-action: none; 
+        }
+
+        #stage {
+            width: 100vw; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            perspective: 2000px;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+        }
+
+        .stack-container { position: relative; width: 320px; height: 480px; transform-style: preserve-3d; }
+
+        .peek-card {
+            position: absolute; width: 100%; height: 100%;
+            border-radius: 28px; overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease; background: #111;
+        }
+        .peek-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.2; }
+        .p1 { transform: translateZ(-45px) translateY(15px) scale(0.94); z-index: 20; opacity: 0.7; }
+        .p2 { transform: translateZ(-90px) translateY(30px) scale(0.88); z-index: 10; opacity: 0.3; }
+
+        #card {
+            width: 100%; height: 100%;
+            position: absolute; transform-style: preserve-3d;
+            z-index: 100; cursor: grab;
+        }
+
+        .card-face {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 28px;
+            overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            transition: background 0.5s ease, border 0.5s ease;
+        }
+
+        .front { display: flex; flex-direction: column; border: 2px solid var(--white); }
+        .front img { 
+            width: 100%; height: 75%; object-fit: cover; 
+            position: absolute; top: 0; z-index: 1; 
+            border-bottom: 4px solid rgba(255,255,255,0.2); 
+            pointer-events: none;
+        }
+        
+        .front-ui {
+            position: absolute; bottom: 0; width: 100%; height: 25%; z-index: 2;
+            padding: 20px; color: white; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            pointer-events: none;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+            padding: 30px 20px; box-sizing: border-box;
+            display: flex; flex-direction: column; color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .school-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; }
+        .address-text { font-size: 13px; opacity: 0.9; margin-bottom: 25px; line-height: 1.4; }
+        
+        .social-links {
+            display: flex; justify-content: center; gap: 15px; margin: 10px 0 30px;
+        }
+        .social-links a {
+            color: white; text-decoration: none; font-size: 18px; 
+            background: rgba(255,255,255,0.15); 
+            width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: transform 0.3s;
+            z-index: 110;
+        }
+        /* Hide icon if link is missing */
+        .social-links a[href="#"], .social-links a[href=""] { display: none; }
+
+        .btn-shop {
+            background: #fff; text-align: center; padding: 14px; 
+            border-radius: 12px; text-decoration: none; font-weight: bold; 
+            margin-top: auto; text-transform: uppercase; letter-spacing: 1px;
+            transition: all 0.5s ease; z-index: 110;
+        }
+
+        .flipping { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .swiping { transition: transform 0.5s ease-out, opacity 0.5s !important; }
+        .resetting { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <div class="stack-container">
+        <div class="peek-card p2" id="peek2-card"><img id="peek2-img" src=""></div>
+        <div class="peek-card p1" id="peek1-card"><img id="peek1-img" src=""></div>
+        
+        <div id="card">
+            <div class="card-face front" id="front-bg">
+                <img id="p-img" src="">
+                <div class="front-ui">
+                    <h2 id="p-name">SCHOOL NAME</h2>
+                </div>
+            </div>
+
+            <div class="card-face back" id="back-bg">
+                <p style="opacity: 0.7; font-size: 10px; margin:0; letter-spacing: 2px;">OFFICIAL PROFILE</p>
+                <h3 id="b-name" class="school-title">SCHOOL NAME</h3>
+                <p id="b-address" class="address-text">Address</p>
+                
+                <div class="social-links">
+                    <a href="#" id="link-fb" onclick="event.stopPropagation()" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" id="link-ig" onclick="event.stopPropagation()" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="#" id="link-wa" onclick="event.stopPropagation()" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" id="link-loc" onclick="event.stopPropagation()" target="_blank"><i class="fas fa-map-marker-alt"></i></a>
+                 </div>
+
+                <a href="#" id="p-link" target="_blank" class="btn-shop" onclick="event.stopPropagation()">GO TO WEBSITE</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const DATA = [
+    { 
+        name: "P.P.Savani Chaitanya Vidya Sankul", 
+        address: "Abrama, Surat", 
+        img: "P.P.Savani Chaitanya Vidya Sankul.png", 
+        link: "https://ppsavani.org",
+        theme: "#FF8C00",
+        socials: {
+            fb: "https://facebook.com/ppsavaniabrama",
+            ig: "https://instagram.com/ppsavani",
+            wa: "https://wa.me/910000000000",
+            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
+        }
+    },
+    { 
+        name: "P.P.Savani Vidhyabhavan", 
+        address: "Hirabaugh, Surat", 
+        img: "P.P.Savani Vidhyabhavan.png", 
+        link: "https://ppsavanicbse.org/",
+        theme: "#002366",
+        socials: {
+            fb: "https://facebook.com/ppsavanihirabaugh",
+            ig: "https://instagram.com/ppsavani", 
+            wa: "https://wa.me/910000000001",
+            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
+        }
+    },
+    { 
+        name: "Radiant English Academy Surat", 
+        address: "Umra & Piplod, Surat", 
+        img: "Radiant English Academy surat.png", 
+        link: "https://ppsavanicbse.org/",
+        theme: "#FF8C00",
+        socials: {
+            fb: "https://facebook.com/radiantsurat",
+            ig: "https://instagram.com/radiantsurat",
+            wa: "https://wa.me/910000000001",
+            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
+        }
+    },
+    { 
+        name: "P.P.Savani Vidyalay", 
+        address: "Dhartinagar, Surat", 
+        img: "P.P.Savani Vidyalay.png", 
+        link: "https://ppsavanicbse.org/",
+        theme: "#002366",
+        socials: {
+            fb: "https://facebook.com/ppsavanidhartinagar",
+            ig: "https://instagram.com/ppsavani",
+            wa: "https://wa.me/910000000002",
+            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
+        }
+    },
+    { 
+        name: "Radiant English Academy", 
+        address: "Dabholi, Katargam", 
+        img: "Radiant English Academy.png", 
+        link: "https://ppsavanicbse.org/",
+        theme: "#FF8C00",
+        socials: {
+            fb: "https://facebook.com/radiantdabholi",
+            ig: "https://instagram.com/radiantdabholi",
+            wa: "https://wa.me/910000000003",
+            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
+        }
+    }
+];
+
+let currentIndex = 0;
+let isFlipped = false;
+let startX = 0;
+let moveX = 0;
+let isMoving = false;
+const card = document.getElementById('card');
+
+function updateDeck() {
+    const main = DATA[currentIndex % DATA.length];
+    const n1 = DATA[(currentIndex + 1) % DATA.length];
+    const n2 = DATA[(currentIndex + 2) % DATA.length];
+
+    // Style
+    document.getElementById('front-bg').style.background = main.theme;
+    document.getElementById('back-bg').style.background = main.theme;
+    document.getElementById('p-link').style.color = main.theme;
+
+    // Basic Content
+    document.getElementById('p-img').src = main.img;
+    document.getElementById('p-name').innerText = main.name;
+    document.getElementById('b-name').innerText = main.name;
+    document.getElementById('b-address').innerText = main.address;
+    document.getElementById('p-link').href = main.link;
+
+    // Social Content
+    document.getElementById('link-fb').href = main.socials.fb || "#";
+    document.getElementById('link-ig').href = main.socials.ig || "#";
+    document.getElementById('link-wa').href = main.socials.wa || "#";
+    document.getElementById('link-loc').href = main.socials.loc || "#";
+  
+
+    // Peeks
+    document.getElementById('peek1-img').src = n1.img;
+    document.getElementById('peek1-card').style.background = n1.theme;
+    document.getElementById('peek2-img').src = n2.img;
+    document.getElementById('peek2-card').style.background = n2.theme;
+}
+
+card.addEventListener('click', (e) => {
+    if (Math.abs(moveX) > 10) return;
+    isFlipped = !isFlipped;
+    card.classList.add('flipping');
+    card.style.transform = isFlipped ? `rotateY(180deg)` : `rotateY(0deg)`;
+    setTimeout(() => card.classList.remove('flipping'), 600);
+});
+
+card.addEventListener('touchstart', (e) => {
+    if (isFlipped) return;
+    startX = e.touches[0].clientX;
+    card.classList.remove('flipping', 'swiping', 'resetting');
+    isMoving = true;
+});
+
+card.addEventListener('touchmove', (e) => {
+    if (isFlipped || !isMoving) return;
+    moveX = e.touches[0].clientX - startX;
+    card.style.transform = `translateX(${moveX}px) rotateZ(${moveX/20}deg)`;
+    if (Math.abs(moveX) > 10) e.preventDefault(); 
+});
+
+card.addEventListener('touchend', () => {
+    if (isFlipped || !isMoving) return;
+    isMoving = false;
+    if (Math.abs(moveX) > 100) {
+        const dir = moveX > 0 ? 1 : -1;
+        card.classList.add('swiping');
+        card.style.transform = `translateX(${dir * 800}px) rotateZ(${dir * 30}deg)`;
+        setTimeout(() => {
+            currentIndex++;
+            updateDeck();
+            card.classList.remove('swiping');
+            card.style.transform = `translateX(0) rotateZ(0)`;
+            moveX = 0;
+        }, 300);
+    } else {
+        card.classList.add('resetting');
+        card.style.transform = `translateX(0) rotateZ(0)`;
+        setTimeout(() => {
+            card.classList.remove('resetting');
+            moveX = 0;
+        }, 400);
+    }
+});
+
+updateDeck();
+</script>
+</body>
+</html>
