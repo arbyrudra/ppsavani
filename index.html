@@ -1,293 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>School Portfolio Dynamic</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root { 
-            --lux-orange: #FF8C00; 
-            --lux-blue: #002366; 
-            --white: #ffffff; 
-        }
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif;
-            touch-action: none; 
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Pranay Jardosh</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+:root{
+    --orange: #FF8C00;
+    --navy: #001f54;
+    --dark-bg: #0a0a0a;
+    --glass: rgba(255, 255, 255, 0.15);
+    --soft-blue: #f0f4f8;
+}
+html,body{
+    margin:0; width:100%; height:100%; background: var(--dark-bg);
+    display:flex; justify-content:center; align-items:center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow:hidden; touch-action:none;
+}
+#container{ width:340px; height:620px; perspective:2000px; }
 
-        #stage {
-            width: 100vw; height: 100vh;
-            display: flex; align-items: center; justify-content: center;
-            perspective: 2000px;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-        }
+/* ================= DIRECTOR CARD ================= */
+#director-card{
+    width:100%; height:100%; background: #ffffff; border-radius:32px;
+    box-sizing:border-box; display:flex; flex-direction:column; color:#333;
+    cursor:pointer; box-shadow:0 30px 60px rgba(0,0,0,0.5); overflow: hidden; position: relative;
+}
+.dir-header { 
+    background: linear-gradient(135deg, #0078d4, #001f54); 
+    height: 160px; width: 100%; position: relative;
+}
+.dir-header::after {
+    content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 50px;
+    background: #fff; clip-path: ellipse(60% 100% at 50% 100%);
+}
+.dir-content { padding: 0 24px 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; align-items: center; }
+#director-card img{ 
+    width: 140px; height: 140px; border-radius: 50%; border: 6px solid #fff; 
+    margin: -80px auto 10px; object-fit: cover; box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+    position: relative; z-index: 2;
+}
+.dir-content h2 { margin: 5px 0 2px; font-size: 24px; color: var(--navy); font-weight: 800; }
+.dir-content .title { color: var(--orange); font-weight: 700; font-size: 15px; text-transform: uppercase; letter-spacing: 1px; }
+.dir-content .dept { font-size: 13px; color: #777; margin-bottom: 15px; }
 
-        .stack-container { position: relative; width: 320px; height: 480px; transform-style: preserve-3d; }
+.contact-info { 
+    text-align: left; background: var(--soft-blue); width: 100%;
+    border-radius: 24px; padding: 18px; border: 1px solid rgba(0,0,0,0.03); box-sizing: border-box;
+}
+.info-item { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; font-size: 11px; color: #444; text-decoration: none; }
+.info-item i { 
+    width: 32px; height: 32px; background: #fff; color: var(--orange); 
+    border-radius: 10px; display: flex; align-items: center; justify-content: center; 
+    font-size: 13px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.view-branches-btn { 
+    background: var(--navy); color: #fff; width: 100%;
+    padding: 20px; font-weight: 700; font-size: 13px; 
+    text-align: center; text-transform: uppercase; letter-spacing: 1px; border: none;
+}
 
-        .peek-card {
-            position: absolute; width: 100%; height: 100%;
-            border-radius: 28px; overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.5s ease; background: #111;
-        }
-        .peek-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.2; }
-        .p1 { transform: translateZ(-45px) translateY(15px) scale(0.94); z-index: 20; opacity: 0.7; }
-        .p2 { transform: translateZ(-90px) translateY(30px) scale(0.88); z-index: 10; opacity: 0.3; }
+/* ================= SLIDER & BRANCH CARDS ================= */
+#branches-slider{ width:100%; height:100%; display:none; position:relative; }
+#card-container{ width:100%; height:100%; position:relative; transform-style:preserve-3d; }
+.branch-card{ width:100%; height:100%; position:absolute; transform-style:preserve-3d; will-change:transform; }
+.branch-card>div{ position:absolute; width:100%; height:100%; border-radius:30px; box-sizing:border-box; backface-visibility:hidden; display:flex; flex-direction:column; overflow: hidden; }
 
-        #card {
-            width: 100%; height: 100%;
-            position: absolute; transform-style: preserve-3d;
-            z-index: 100; cursor: grab;
-        }
+/* ================= FRONT SIDE ================= */
+.front{ background:#ffffff; text-align:center; }
+.school-hero-wrap { width: 100%; flex: 1.2; display: flex; align-items: center; justify-content: center; padding: 25px; box-sizing: border-box; }
+.school-hero-wrap img { max-width: 85%; max-height: 85%; object-fit: contain; }
+.info-section { 
+    background: var(--orange); color: #ffffff; width: 100%; 
+    padding: 25px 20px 85px; box-sizing: border-box; border-radius: 40px 40px 0 0; 
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+}
+.school-name-front{ font-size:18px; font-weight:800; margin-bottom: 8px; line-height: 1.2; text-align: center; margin-top: 5px; }
+.school-location{ font-size:13px; opacity:0.9; display:flex; align-items:center; gap:6px; margin-bottom: 15px; }
+.hint-container { display: flex; justify-content: center; gap: 10px; margin-top: auto; padding-bottom: 5px; }
+.hint-text { font-size: 9px; font-weight: 600; background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 15px; animation: pulseHint 2s infinite; }
 
-        .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; border-radius: 28px;
-            overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);
-            transition: background 0.5s ease, border 0.5s ease;
-        }
+/* ================= BACK SIDE ================= */
+.back{ background: linear-gradient(145deg, var(--navy), #000c24); color:#ffffff; transform:rotateY(180deg); padding: 25px; display: flex; flex-direction: column; justify-content: space-between; }
+.back h3 { color: var(--orange); margin: 0 0 15px; font-size: 18px; text-align: center; border-bottom: 1px solid var(--glass); padding-bottom: 10px; letter-spacing: 1px;}
+.detail-box { margin-bottom: 12px; }
+.detail-label { font-size: 10px; text-transform: uppercase; color: var(--orange); font-weight: 700; display: block; margin-bottom: 2px; opacity: 0.9;}
+.detail-value { font-size: 12.5px; line-height: 1.4; color: #fff; font-weight: 400;}
 
-        .front { display: flex; flex-direction: column; border: 2px solid var(--white); }
-        .front img { 
-            width: 100%; height: 75%; object-fit: cover; 
-            position: absolute; top: 0; z-index: 1; 
-            border-bottom: 4px solid rgba(255,255,255,0.2); 
-            pointer-events: none;
-        }
-        
-        .front-ui {
-            position: absolute; bottom: 0; width: 100%; height: 25%; z-index: 2;
-            padding: 20px; color: white; box-sizing: border-box;
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            pointer-events: none;
-        }
+.stats-row { display: flex; gap: 10px; margin-bottom: 15px; }
+.stat-pill { background: var(--glass); flex: 1; padding: 10px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+.stat-pill span { display: block; font-size: 9px; opacity: 0.8; margin-bottom: 4px; color: var(--orange); font-weight: 700; text-transform: uppercase;}
+.stat-pill strong { font-size: 15px; color: #fff; }
 
-        .back {
-            transform: rotateY(180deg);
-            padding: 30px 20px; box-sizing: border-box;
-            display: flex; flex-direction: column; color: white;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
+.social-row{ display:flex; justify-content: center; gap:12px; margin-top: auto; margin-bottom: 15px; }
+.social-link { background: var(--glass); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 16px; color: #fff; text-decoration: none; transition: 0.3s;}
+.social-link:hover { background: var(--orange); }
 
-        .school-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #fff; }
-        .address-text { font-size: 13px; opacity: 0.9; margin-bottom: 25px; line-height: 1.4; }
-        
-        .social-links {
-            display: flex; justify-content: center; gap: 15px; margin: 10px 0 30px;
-        }
-        .social-links a {
-            color: white; text-decoration: none; font-size: 18px; 
-            background: rgba(255,255,255,0.15); 
-            width: 45px; height: 45px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; transition: transform 0.3s;
-            z-index: 110;
-        }
-        /* Hide icon if link is missing */
-        .social-links a[href="#"], .social-links a[href=""] { display: none; }
+.cta-btn{ width: 100%; padding: 15px 0; border-radius: 15px; background: var(--orange); color: #fff; text-align:center; font-weight:700; font-size: 14px; text-decoration: none; box-shadow: 0 5px 15px rgba(255, 140, 0, 0.3); }
 
-        .btn-shop {
-            background: #fff; text-align: center; padding: 14px; 
-            border-radius: 12px; text-decoration: none; font-weight: bold; 
-            margin-top: auto; text-transform: uppercase; letter-spacing: 1px;
-            transition: all 0.5s ease; z-index: 110;
-        }
+/* DOTS */
+#dots{ position:absolute; bottom: 25px; left: 50%; transform: translateX(-50%); display:flex; gap:8px; z-index: 500; pointer-events: none; }
+.dot{ width:7px; height:7px; background:rgba(255,255,255,0.4); border-radius:50%; transition: 0.3s; }
+.dot.active{ width:20px; border-radius:10px; background: #fff; }
+#back-btn{ position:absolute; top:20px; left:20px; width:40px; height:40px; border-radius:12px; background: #000; display:flex; justify-content:center; align-items:center; color:#fff; z-index:100; cursor: pointer; }
 
-        .flipping { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important; }
-        .swiping { transition: transform 0.5s ease-out, opacity 0.5s !important; }
-        .resetting { transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
-    </style>
+@keyframes pulseHint { 0%, 100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.05); opacity: 1; } }
+</style>
 </head>
 <body>
-
-<div id="stage">
-    <div class="stack-container">
-        <div class="peek-card p2" id="peek2-card"><img id="peek2-img" src=""></div>
-        <div class="peek-card p1" id="peek1-card"><img id="peek1-img" src=""></div>
-        
-        <div id="card">
-            <div class="card-face front" id="front-bg">
-                <img id="p-img" src="">
-                <div class="front-ui">
-                    <h2 id="p-name">SCHOOL NAME</h2>
-                </div>
-            </div>
-
-            <div class="card-face back" id="back-bg">
-                <p style="opacity: 0.7; font-size: 10px; margin:0; letter-spacing: 2px;">OFFICIAL PROFILE</p>
-                <h3 id="b-name" class="school-title">SCHOOL NAME</h3>
-                <p id="b-address" class="address-text">Address</p>
-                
-                <div class="social-links">
-                    <a href="#" id="link-fb" onclick="event.stopPropagation()" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" id="link-ig" onclick="event.stopPropagation()" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="#" id="link-wa" onclick="event.stopPropagation()" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" id="link-loc" onclick="event.stopPropagation()" target="_blank"><i class="fas fa-map-marker-alt"></i></a>
-                 </div>
-
-                <a href="#" id="p-link" target="_blank" class="btn-shop" onclick="event.stopPropagation()">GO TO WEBSITE</a>
+<div id="container">
+    <div id="director-card">
+        <div class="dir-header"></div>
+        <div class="dir-content">
+            <img src="pranay jardoh.jpg" alt="Pranay Jardosh">
+            <h2>Pranay Jardosh</h2>
+            <div class="title">Director</div>
+            <div class="dept">Academics & Operations</div>
+            <div class="contact-info">
+                <a href="tel:+919925166695" class="info-item"><i class="fas fa-phone"></i> +91 99251 66695</a>
+                <a href="mailto:director@ppsavanicbse.org" class="info-item"><i class="fas fa-envelope"></i> director@ppsavanicbse.org</a>
+                <a href="https://www.ppsavanicbse.org" target="_blank" class="info-item"><i class="fas fa-globe"></i> www.ppsavanicbse.org</a>
+                <div class="info-item"><i class="fas fa-location-dot"></i> Mota Varachha-Abrama Road, Surat</div>
             </div>
         </div>
+        <div class="view-branches-btn">TAP TO VIEW BRANCHES</div>
+    </div>
+    
+    <div id="branches-slider">
+        <div id="back-btn"><i class="fas fa-chevron-left"></i></div>
+        <div id="card-container"></div>
+        <div id="dots"></div>
     </div>
 </div>
 
 <script>
-const DATA = [
-    { 
-        name: "P.P.Savani Chaitanya Vidya Sankul", 
-        address: "Abrama, Surat", 
-        img: "P.P.Savani Chaitanya Vidya Sankul.png", 
-        link: "https://ppsavani.org",
-        theme: "#FF8C00",
-        socials: {
-            fb: "https://facebook.com/ppsavaniabrama",
-            ig: "https://instagram.com/ppsavani",
-            wa: "https://wa.me/910000000000",
-            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
-        }
-    },
-    { 
-        name: "P.P.Savani Vidhyabhavan", 
-        address: "Hirabaugh, Surat", 
-        img: "P.P.Savani Vidhyabhavan.png", 
-        link: "https://ppsavanicbse.org/",
-        theme: "#002366",
-        socials: {
-            fb: "https://facebook.com/ppsavanihirabaugh",
-            ig: "https://instagram.com/ppsavani", 
-            wa: "https://wa.me/910000000001",
-            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
-        }
-    },
-    { 
-        name: "Radiant English Academy Surat", 
-        address: "Umra & Piplod, Surat", 
-        img: "Radiant English Academy Surat.png", 
-        link: "https://ppsavanicbse.org/",
-        theme: "#FF8C00",
-        socials: {
-            fb: "https://facebook.com/radiantsurat",
-            ig: "https://instagram.com/radiantsurat",
-            wa: "https://wa.me/910000000001",
-            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
-        }
-    },
-    { 
-        name: "P.P.Savani Vidyalay", 
-        address: "Dhartinagar, Surat", 
-        img: "P.P.Savani Vidyalay.png", 
-        link: "https://ppsavanicbse.org/",
-        theme: "#002366",
-        socials: {
-            fb: "https://facebook.com/ppsavanidhartinagar",
-            ig: "https://instagram.com/ppsavani",
-            wa: "https://wa.me/910000000002",
-            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
-        }
-    },
-    { 
-        name: "Radiant English Academy", 
-        address: "Dabholi, Katargam", 
-        img: "Radiant English Academy.png", 
-        link: "https://ppsavanicbse.org/",
-        theme: "#FF8C00",
-        socials: {
-            fb: "https://facebook.com/radiantdabholi",
-            ig: "https://instagram.com/radiantdabholi",
-            wa: "https://wa.me/910000000003",
-            loc: "https://www.google.com/maps/dir//P.P.+Savani+CBSE+Mota+Varachha+Abrahma+Road,+Surat+Guj.+Surat,+Gujarat+394150/@21.2593812,72.903986,10z/data=!4m5!4m4!1m0!1m2!1m1!1s0x3be0460157f8de29:0xe31d652a1eaba24"
-        }
-    }
+const branches=[
+ { 
+    name:"P.P. Savani Chaitanya Vidya Sankul", 
+    addr:"Abrama, Surat", 
+    img:"P.P.Savani Chaitanya Vidya Sankul.png", 
+    since:"2010", 
+    passed:"8,500+", 
+    activities:"Robotics Lab, Vedic Maths, & Horse Riding.",
+    creativity:"Annual 'Srijan' Tech-Art Carnival.",
+    url:"https://ppsavanicbse.org",
+    fb:"https://www.facebook.com/PPSCVSCBSEAbrama/",
+    ig:"https://www.instagram.com/ppsavanicbseabrama/",
+    wa:"https://wa.me/919925166695",
+    loc:"https://maps.app.goo.gl/faE1M9V43RHkyXvr8"
+ },
+ { 
+    name:"P.P. Savani Vidhyabhavan", 
+    addr:"Hirabaugh, Surat", 
+    img:"P.P.Savani Vidhyabhavan.png", 
+    since:"2005", 
+    passed:"12,000+", 
+    activities:"International Sports Arena.",
+    creativity:"Wall of Innovation Hub.",
+    url:"http://ppsavani.org/",
+    fb:"https://www.facebook.com/PPSCVSCBSEAbrama/",
+    ig:"https://www.instagram.com/ppsavanicbseabrama/",
+    wa:"https://wa.me/919925166695",
+    loc:"https://maps.app.goo.gl/QYKR4mQHK1Ub3EKk8"
+ },
+ { 
+    name:"Radiant English Academy", 
+    addr:"Umra & Piplod", 
+    img:"Radiant English Academy surat.png", 
+    since:"2012", 
+    passed:"5,200+", 
+    activities:"Music Studio & Theatre Club.",
+    creativity:"Project-based Learning.",
+    url:"https://www.radiantenglishacademy.in/",
+    fb:"https://www.facebook.com/REAGSEBEMOfficial?mibextid=rS40aB7S9Ucbxw6v",
+    ig:"https://www.instagram.com/radiant_english_academy_surat?igsh=MTg4eTVxdDVrajE2",
+    wa:"https://wa.me/919925166695",
+    loc:"https://maps.app.goo.gl/jaeDeongFXpLLH5j7"
+ },
+ { 
+    name:"P.P. Savani Vidyalay", 
+    addr:"Dhartinagar, Surat", 
+    since:"2008", 
+    img:"P.P.Savani Vidyalay.png", 
+    passed:"9,800+", 
+    activities:"Smart Digital Libraries & NCC.",
+    creativity:"Green Campus Initiatives.",
+    url:"http://ppsavani.org/",
+    fb:"https://www.facebook.com/PPSCVSCBSEAbrama/",
+    ig:"https://www.instagram.com/ppsavanicbseabrama/",
+    wa:"https://wa.me/919925166695",
+    loc:"https://maps.app.goo.gl/QYKR4mQHK1Ub3EKk8"
+ },
+ { 
+    name:"Radiant English Academy", 
+    addr:"Dabholi, Surat", 
+    img:"Radiant English Academy.png", 
+    since:"2015", 
+    passed:"3,400+", 
+    activities:"Yoga Deck & Karate Academy.",
+    creativity:"Design Thinking Workshops.",
+    url:"https://www.radiantenglishacademy.in/",
+    fb:"https://www.facebook.com/REAGSEBEMOfficial?mibextid=rS40aB7S9Ucbxw6v",
+    ig:"https://www.instagram.com/radiant_english_academy_surat?igsh=MTg4eTVxdDVrajE2",
+    wa:"https://wa.me/919925166695",
+    loc:"https://maps.app.goo.gl/jaeDeongFXpLLH5j7"
+ }
 ];
 
-let currentIndex = 0;
-let isFlipped = false;
-let startX = 0;
-let moveX = 0;
-let isMoving = false;
-const card = document.getElementById('card');
+let currentIndex=0;
+const cardContainer=document.getElementById('card-container');
+const directorCard = document.getElementById('director-card');
+const slider = document.getElementById('branches-slider');
+const dotsContainer = document.getElementById('dots');
 
-function updateDeck() {
-    const main = DATA[currentIndex % DATA.length];
-    const n1 = DATA[(currentIndex + 1) % DATA.length];
-    const n2 = DATA[(currentIndex + 2) % DATA.length];
-
-    // Style
-    document.getElementById('front-bg').style.background = main.theme;
-    document.getElementById('back-bg').style.background = main.theme;
-    document.getElementById('p-link').style.color = main.theme;
-
-    // Basic Content
-    document.getElementById('p-img').src = main.img;
-    document.getElementById('p-name').innerText = main.name;
-    document.getElementById('b-name').innerText = main.name;
-    document.getElementById('b-address').innerText = main.address;
-    document.getElementById('p-link').href = main.link;
-
-    // Social Content
-    document.getElementById('link-fb').href = main.socials.fb || "#";
-    document.getElementById('link-ig').href = main.socials.ig || "#";
-    document.getElementById('link-wa').href = main.socials.wa || "#";
-    document.getElementById('link-loc').href = main.socials.loc || "#";
-  
-
-    // Peeks
-    document.getElementById('peek1-img').src = n1.img;
-    document.getElementById('peek1-card').style.background = n1.theme;
-    document.getElementById('peek2-img').src = n2.img;
-    document.getElementById('peek2-card').style.background = n2.theme;
+function createDots() {
+    dotsContainer.innerHTML = '';
+    branches.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === currentIndex ? ' active' : '');
+        dotsContainer.appendChild(d);
+    });
 }
 
-card.addEventListener('click', (e) => {
-    if (Math.abs(moveX) > 10) return;
-    isFlipped = !isFlipped;
-    card.classList.add('flipping');
-    card.style.transform = isFlipped ? `rotateY(180deg)` : `rotateY(0deg)`;
-    setTimeout(() => card.classList.remove('flipping'), 600);
-});
+function updateDots() {
+    const dots = document.querySelectorAll('.dot');
+    dots.forEach((d, i) => {
+        d.classList.toggle('active', i === currentIndex);
+    });
+}
 
-card.addEventListener('touchstart', (e) => {
-    if (isFlipped) return;
-    startX = e.touches[0].clientX;
-    card.classList.remove('flipping', 'swiping', 'resetting');
-    isMoving = true;
-});
+function spawnCard(i){
+    const b = branches[i];
+    const card = document.createElement('div');
+    card.className = 'branch-card';
+    card.innerHTML = `
+        <div class="front">
+            <div class="school-hero-wrap"><img src="${b.img}" alt="${b.name}"></div>
+            <div class="info-section">
+                <div class="school-name-front">${b.name}</div>
+                <div class="school-location"><i class="fas fa-location-dot"></i> ${b.addr}</div>
+                <div class="hint-container">
+                    <span class="hint-text">TAP TO FLIP</span>
+                    <span class="hint-text">SWIPE NEXT</span>
+                </div>
+            </div>
+        </div>
+        <div class="back">
+            <h3>CAMPUS OVERVIEW</h3>
+            <div class="detail-box">
+                <span class="detail-label">Institution</span>
+                <div class="detail-value">${b.name}</div>
+            </div>
+            <div class="stats-row">
+                <div class="stat-pill"><span>Founded</span><strong>${b.since}</strong></div>
+                <div class="stat-pill"><span>Alumni</span><strong>${b.passed}</strong></div>
+            </div>
+            <div class="detail-box">
+                <span class="detail-label">Special Activities</span>
+                <div class="detail-value">${b.activities}</div>
+            </div>
+            <div class="detail-box">
+                <span class="detail-label">Creative Edge</span>
+                <div class="detail-value">${b.creativity}</div>
+            </div>
+            <div class="social-row">
+                <a href="${b.fb}" target="_blank" class="social-link" onclick="event.stopPropagation()"><i class="fab fa-facebook-f"></i></a>
+                <a href="${b.ig}" target="_blank" class="social-link" onclick="event.stopPropagation()"><i class="fab fa-instagram"></i></a>
+                <a href="${b.wa}" target="_blank" class="social-link" onclick="event.stopPropagation()"><i class="fab fa-whatsapp"></i></a>
+                <a href="${b.loc}" target="_blank" class="social-link" onclick="event.stopPropagation()"><i class="fas fa-location-dot"></i></a>
+            </div>
+            <a href="${b.url}" target="_blank" class="cta-btn" onclick="event.stopPropagation()">EXPLORE WEBSITE</a>
+        </div>`;
+    cardContainer.appendChild(card);
+    handleCardInteractions(card);
+}
 
-card.addEventListener('touchmove', (e) => {
-    if (isFlipped || !isMoving) return;
-    moveX = e.touches[0].clientX - startX;
-    card.style.transform = `translateX(${moveX}px) rotateZ(${moveX/20}deg)`;
-    if (Math.abs(moveX) > 10) e.preventDefault(); 
-});
+function handleCardInteractions(card){
+    let sx=0, cx=0, drag=false, flip=false;
+    card.addEventListener('touchstart',e=>{ sx=e.touches[0].clientX; drag=false; card.style.transition='none'; });
+    card.addEventListener('touchmove',e=>{
+        cx=e.touches[0].clientX; const dx=cx-sx; if(Math.abs(dx)>10) drag=true;
+        const scale=1-Math.min(Math.abs(dx)/1500,.05);
+        card.style.transform=`translateX(${dx}px) scale(${scale}) rotateZ(${dx/25}deg) rotateY(${flip?180:0}deg)`;
+    });
+    card.addEventListener('touchend',()=>{
+        const dx=cx-sx;
+        if(!drag){ 
+            flip=!flip; 
+            card.style.transition="transform .6s cubic-bezier(.34,1.56,.64,1)"; 
+            card.style.transform=`rotateY(${flip?180:0}deg)`; 
+            return; 
+        }
+        if(Math.abs(dx)>100){
+            const dir=dx>0?1:-1; 
+            card.style.transition="transform .4s ease-in"; 
+            card.style.transform=`translateX(${dir*600}px) rotateZ(${dir*30}deg)`;
+            currentIndex=dir===-1?(currentIndex+1)%branches.length:(currentIndex-1+branches.length)%branches.length;
+            setTimeout(()=>{ card.remove(); spawnCard(currentIndex); updateDots(); },300);
+        } else { 
+            card.style.transition="transform .4s cubic-bezier(.175, .885, .32, 1.275)"; 
+            card.style.transform=`rotateY(${flip?180:0}deg)`; 
+        }
+    });
+}
 
-card.addEventListener('touchend', () => {
-    if (isFlipped || !isMoving) return;
-    isMoving = false;
-    if (Math.abs(moveX) > 100) {
-        const dir = moveX > 0 ? 1 : -1;
-        card.classList.add('swiping');
-        card.style.transform = `translateX(${dir * 800}px) rotateZ(${dir * 30}deg)`;
-        setTimeout(() => {
-            currentIndex++;
-            updateDeck();
-            card.classList.remove('swiping');
-            card.style.transform = `translateX(0) rotateZ(0)`;
-            moveX = 0;
-        }, 300);
-    } else {
-        card.classList.add('resetting');
-        card.style.transform = `translateX(0) rotateZ(0)`;
-        setTimeout(() => {
-            card.classList.remove('resetting');
-            moveX = 0;
-        }, 400);
-    }
-});
-
-updateDeck();
+directorCard.onclick=()=>{ 
+    directorCard.style.display='none'; 
+    slider.style.display='block'; 
+    currentIndex=0; 
+    createDots(); 
+    spawnCard(currentIndex); 
+};
+document.getElementById('back-btn').onclick=(e)=>{ 
+    e.stopPropagation(); 
+    directorCard.style.display='flex'; 
+    slider.style.display='none'; 
+    cardContainer.innerHTML=''; 
+    dotsContainer.innerHTML=''; 
+};
 </script>
 </body>
 </html>
-
